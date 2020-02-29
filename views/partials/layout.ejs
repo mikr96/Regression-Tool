@@ -1,0 +1,43 @@
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regression Testing Page</title>
+  <link rel="shortcut icon" href="#" />
+  <link rel="stylesheet" type="text/css" href="../../../css/global.css"/>
+  <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css"/>
+  <script src="../../../js/jquery-3.4.1.min.js"></script>
+  <script src="../../../js/Jaro-Wrinker.js"></script>
+  <script src="../../../js/bootstrap.min.js"></script>
+  <style>
+    label {
+      display: block;
+    }
+  </style>
+</head>
+<script>  
+
+  async function next() {
+    var array = $("#previous").val().split("\n");
+    for (i=0;i<5;i++) {
+      for (const j of array) {
+        await calculate(j, array, i);
+      }
+    }
+    console.log(' Done!')
+    // window.location.href = "result"   
+  };
+
+  async function calculate(param, array, index) {
+    await delay()
+    // console.log(param)
+    console.log(index)
+    //console.log(array[index])
+    JaroWrinker(array[index], param)
+  };
+
+  function delay() {
+    return new Promise(resolve => setTimeout(resolve, 300));
+  };
+  
+</script>
