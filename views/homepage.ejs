@@ -4,17 +4,61 @@
 <div class="container" style="padding: 50px;">
   <div class="form-group">
     <div class="row">
-      <div class="col-6">
-        <strong><label>PREVIOUS</label></strong>
-        <textarea id="previous" name="previous" rows="20" cols="68" placeholder="Put your previous version of code here"></textarea>
+      <div class="col-12">
+        <strong><label>STRING ALGORITHM</label></strong>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+          <label class="form-check-label" for="exampleRadios1">
+            Jaro-Winkler Algorithm
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+          <label class="form-check-label" for="exampleRadios2">
+            Levenshtein Algorithm
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
+          <label class="form-check-label" for="exampleRadios3">
+            Trigram Comparison
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios4" value="option4">
+          <label class="form-check-label" for="exampleRadios4">
+            Cosine Similarity
+          </label>
+        </div>
       </div>
-      <div class="col-6">
-        <strong><label>LATEST</label></strong>
-        <textarea id="latest" name="latest" rows="20" cols="68" placeholder="Put your latest version of code here"></textarea>
+    </div>
+    <br />
+    <div class="row">
+      <div class="col-12">
+        <strong><label>TEST CASES</label></strong>
+        <textarea id="previous" name="previous" rows="20" placeholder="Put your previous version of code here" style="width: 100%;"></textarea>
       </div>
     </div>
   </div>
-  <button onclick="next()" class="btn btn-primary btn-block">Next</button>
+  <div class="row">
+    <div class="col-6">
+      <button onclick="next()" class="btn btn-primary btn-block">Process</button>
+    </div>
+    <div class="col-6">
+      <button id="download" onclick="download()" class="btn btn-success btn-block" disabled>Download</button>
+    </div>
+  </div>
+</div>
+<div id="myModal" class="modal fade">
+  <div class="modal-dialog" style="position: relative; height: 100%; width: 100%;">
+      <div class="modal-content" style="position:absolute; top: 50%; margin-top: -50px;">
+          <div class="modal-body">
+            <div class="progress">
+              <div id="progBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
+            </div>
+          </div>
+      </div>
+  </div>
 </div>
 </body>
 

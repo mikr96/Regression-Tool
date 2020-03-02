@@ -63,7 +63,7 @@
 
       weight = weight + l * p * (1 - weight);
   }
-  console.log(weight)
+//   console.log(weight)
   return weight;
 }
 })();

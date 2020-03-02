@@ -1,7 +1,23 @@
 <% include partials/layout %>
 <body>
   <% include partials/header %>
+  <div class="container">
+    <table id="myTable" class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">TC ID</th>
+          <th scope="col">Similarity (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 </body>
 <script>
-  console.log(globalvar)
+  const data = JSON.parse(localStorage.getItem("prioritizedData"));
+  data.forEach((x, index) => {
+    $("#myTable").append(`<tr><th scope="row">${index+1}</th><td>${x[0]}</td><td>${x[1]}</td></tr>`)
+  }) 
 </script>
