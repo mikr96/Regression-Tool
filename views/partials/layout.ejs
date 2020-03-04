@@ -8,13 +8,23 @@
   <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css"/>
   <link rel="stylesheet" type="text/css" href="../../../css/sweetalert2.min.css"/>
   <script src="../../../js/jquery-3.4.1.min.js"></script>
-  <script src="../../../js/Jaro-Wrinker.js"></script>
   <script src="../../../js/bootstrap.min.js"></script>
-  <script src="../../../js/GreedyAlgo.js"></script>
   <script src="../../../js/sweetalert2.all.min.js"></script>
+  
+  <!-- Excel -->
   <script src="../../../js/shim.min.js"></script>
   <script src="../../../js/xlsx.full.min.js"></script>
   <script src="../../../js/FileSaver.js"></script>
+  
+  <!-- String Algorithm -->
+  <script src="../../../js/Jaro-Wrinker.js"></script>
+  <script src="../../../js/cosine-similarity.js"></script>
+  <script src="../../../js/levenshtein.js"></script>
+  <script src="../../../js/trigram.js"></script>
+
+  <!-- Evolutionary Algorithm -->
+  <script src="../../../js/GreedyAlgo.js"></script>
+  
   <style>
     label {
       display: block;
@@ -24,7 +34,7 @@
 </head>
 <script>
 
-var progress = 0
+var radioValue, progress = 0
 var iteration = 0
 const percent = 100
 var length = 0
@@ -36,6 +46,9 @@ async function next() {
   $("#myModal").modal('show');
   $('#progBar').attr('aria-valuenow', 0);
   $('#progBar').css('width', '0%');
+
+  radioValue = $("input[name='exampleRadios']:checked").val();
+
   var values = $("#previous").val();
   const array = values.split("\n");
   localStorage.setItem("length", array.length);
@@ -64,7 +77,15 @@ async function calculate(first, second, index) {
   progress = iteration/length*100
   $('#progBar').attr('aria-valuenow', progress);
   $('#progBar').css('width', `${progress}%`);
+  if(radioValue == 'option1') {
     result.push(JaroWrinker(first, second))
+  } else if(radioValue == 'option2') {
+    result.push(LevenshteinDistance(first, second))
+  } else if(radioValue == 'option3') {
+    result.push(JaroWrinker(first, second))
+  } else if(radioValue == 'option4'){
+    result.push(JaroWrinker(first, second))
+  }
   };
   
   function delay() {
