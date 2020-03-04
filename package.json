@@ -2,6 +2,8 @@
   "name": "experiment-setup",
   "version": "0.0.0",
   "private": true,
+  "description": "",
+  "main": "app.js",
   "scripts": {
     "start": "nodemon ./bin/www"
   },
