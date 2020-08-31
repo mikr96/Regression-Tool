@@ -18,9 +18,11 @@
   
   <!-- String Algorithm -->
   <script src="../../../js/Jaro-Wrinker.js"></script>
+  <script src="../../../js/Enhanced-Jaro-Winkler.js"></script>
   <script src="../../../js/cosine-similarity.js"></script>
   <script src="../../../js/levenshtein.js"></script>
   <script src="../../../js/trigram.js"></script>
+  <script src="../../../js/APFD.js"></script>
 
   <!-- Evolutionary Algorithm -->
   <script src="../../../js/GreedyAlgo.js"></script>
@@ -85,6 +87,8 @@ async function calculate(first, second, index) {
     result.push(JaroWrinker(first, second))
   } else if(radioValue == 'option4'){
     result.push(JaroWrinker(first, second))
+  } else if(radioValue == 'option5'){
+    result.push(EnhancedJaroWrinker(first, second))
   }
   };
   
@@ -176,5 +180,69 @@ async function calculate(first, second, index) {
     for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
     return buf;    
 }
+
+async function faults() {
+  // $('#myModal').modal({backdrop: 'static', keyboard: false}) 
+  // $("#myModal").modal('show');
+  // $('#progBar').attr('aria-valuenow', 0);
+  // $('#progBar').css('width', '0%');
+
+  var unitest = 0, array = $("#faults").val().split(/\r\n|\r|\n/), fault_loc = [];
+  console.log(array)
+  for(i=0;i<array.length;i++){
+    if(i==0 || !(i % 83)){
+      unitest = array[i].slice(7);                        // location unitest
+      fault_loc.push(unitest)
+    }
+  }   
+
+  const obj = Object.assign({}, fault_loc);
+
+  for(i=0;i<array.length;i++) {
+    if(i!=0 || (i % 83)) {
+      var temp = array[i].slice(1);
+      // fault[unitest][temp] = array[temp++]
+      obj[i].push(array[temp++]);
+    }
+  }    
+
+  console.log(fault_loc)
+  console.log(obj)
+  // localStorage.setItem("length", array.length);
+  // length = Math.pow(array.length, 2);
+  // const process = () => new Promise (res => {
+  //   array.forEach((first, index) => {
+  //       await sort(first, second, index);
+  //       if (index === array.length -1 && ins === array.length - 1) {
+  //         // console.log(result)
+  //         console.log('Done!')
+  //         await delay()
+  //         localStorage.setItem("results", JSON.stringify(result));
+  //         await prioritize()
+  //       }
+  //   });
+  // })
+  // await process();
+};
+
+//Sort faults
+async function sort(first, second, index) {
+  await delay()
+  iteration = iteration + 1
+  progress = iteration/length*100
+  $('#progBar').attr('aria-valuenow', progress);
+  $('#progBar').css('width', `${progress}%`);
+  if(radioValue == 'option1') {
+    result.push(JaroWrinker(first, second))
+  } else if(radioValue == 'option2') {
+    result.push(LevenshteinDistance(first, second))
+  } else if(radioValue == 'option3') {
+    result.push(JaroWrinker(first, second))
+  } else if(radioValue == 'option4'){
+    result.push(JaroWrinker(first, second))
+  } else if(radioValue == 'option5'){
+    result.push(EnhancedJaroWrinker(first, second))
+  }
+  };
   
 </script>
