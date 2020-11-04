@@ -13,7 +13,7 @@ router.get('/result', function(req, res, next) {
 });
 
 router.get('/doctoroncall', async function(req, res, next) {
-  res.render('doctoroncall.ejs', {finalize: finalize});
+  res.render('doctoroncall');
 });
 
 module.exports = router;
