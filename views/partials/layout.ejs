@@ -198,13 +198,17 @@ async function faults() {
 
   const obj = Object.assign({}, fault_loc);
 
-  for(i=0;i<array.length;i++) {
-    if(i!=0 || (i % 83)) {
-      var temp = array[i].slice(1);
-      // fault[unitest][temp] = array[temp++]
-      obj[i].push(array[temp++]);
+  // for(i=0;i<array.length;i++) {
+  //   if(i!=0 || (i % 83)) {
+  //     var temp = array[i].slice(1);
+  //     // fault[unitest][temp] = array[temp++]
+  //     obj[i].push(array[temp++]);
+  //   }
+  // }    
+
+  if(i!=0 || (i % 83)) {                                                    
+    console.log(array.sort())                                  // sambung kerja dekat sini 
     }
-  }    
 
   console.log(fault_loc)
   console.log(obj)
