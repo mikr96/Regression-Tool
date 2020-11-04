@@ -29,9 +29,7 @@
     async function start() {
         try {
             const url = 'https://www.doconcall.com.my/health-centre/api-campaign/duduk-rumah'
-            const data_await = await fetch(url, {
-                mode: "no-cors"
-            });
+            const data_await = await fetch(url);
             const data = await data_await.json();
 
             let temp = [];
