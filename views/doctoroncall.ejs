@@ -4,70 +4,53 @@
         border: 1px solid black; 
         width: 100%; 
         height:auto;
-        margin-bottom: 10px;
-    }
-    .center {
-        text-align: center;
-        margin: auto;
-        display: block;
     }
 </style>
 <body>
 <% include partials/header %>
-<div id="body" class="container">
+<%  
+    const foo = async () => {
+    const url = 'https://www.doconcall.com.my/health-centre/api-campaign/duduk-rumah';
+    const data_await = await fetch(url);
+    const data = await data_await.json();
+
+    let temp = [];
+    let finalize = [];
+    data.campaignElement.forEach(e => {
+        if(typeof e.campaignPromoTitle !== "undefined") {
+            finalize.push({
+                "campaignType": e.campaignType,
+                "campaignPromoTitle": e.campaignPromoTitle,
+                "campaignItems": []
+            });
+        }
+    })
+
+    finalize.forEach((e, index) => {
+        document.getElementById("demo").innerHTML = e.campaignPromoTitle;
+        data.campaignElement.forEach(f => {
+            if(e.campaignType == f.campaignType) {
+                e.campaignItems.push(f);
+            }
+        })
+    })
+    console.log(finalize[0].campaignItems[0]);
+    return finalize
+    }   
+    const finalize = foo()
+%>
+<div class="container">
     <br/>
+    <% for(let i=0;i>finalize.length;i++){ %>
+    <h2 id="demo" style="text-align: center; margin:auto;"><%= finalize[i].campaignpromotitle %></h2>
+    <br/>
+    <div id="item" class="row">
+        <% for(let j=0;j>finalize[i].campaignItems.length;j++){ %>
+        <div class="col-md-4 box">
+            <%= finalize[i].campaignItems[j].img %>
+        </div>
+        <% } %>
     </div>
+    <% } %>
 </div>
 </body>
-<script async>
-    // const data = JSON.parse(localStorage.getItem("prioritizedData"));
-    // data.forEach((x, index) => {
-    //   $("#myTable").append(`<tr><th scope="row">${index+1}</th><td>${x[0]}</td><td>${x[1]}</td></tr>`)
-    // }) 
-    start()
-
-    async function start() {
-        try {
-            const url = 'https://www.doconcall.com.my/health-centre/api-campaign/duduk-rumah'
-            const data_await = await fetch(url);
-            const data = await data_await.json();
-
-            let temp = [];
-            let finalize = [];
-            data.campaignElement.forEach(e => {
-                if(typeof e.campaignPromoTitle !== "undefined") {
-                    finalize.push({
-                        "campaignType": e.campaignType,
-                        "campaignPromoTitle": e.campaignPromoTitle,
-                        "campaignItems": []
-                    })
-                }
-            })
-            finalize.forEach((e, index) => {
-                var body = document.getElementById("body")
-                var h2 = document.createElement("h2"); 
-                h2.classList.add("row")
-                h2.classList.add("center")
-                h2.innerHTML = e.campaignPromoTitle
-                body.appendChild(h2)
-                var div_row = document.createElement("div"); 
-                div_row.classList.add("row")
-                data.campaignElement.forEach(f => {
-                    if(e.campaignType == f.campaignType) {
-                        var div = document.createElement("div"); 
-                        div.classList.add("col-md-4")
-                        div.classList.add("box")
-                        div.innerHTML = f.campaignTitle;   
-                        div_row.appendChild(div);
-                        body.appendChild(div_row);
-                        e.campaignItems.push(f)
-                    }
-                })
-            })
-            console.log(finalize)
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-</script>

@@ -1,18 +1,28 @@
 var express = require('express');
 var router = express.Router();
 
-const result = []
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('homepage');
+});
+
+router.get('/TCP', function(req, res, next) {
+  res.render('TCP');
+});
+
+router.get('/TCS', function(req, res, next) {
+  res.render('TCS');
+});
+
+router.get('/Hybrid', function(req, res, next) {
+  res.render('Hybrid');
 });
 
 router.get('/result', function(req, res, next) {
   res.render('result');
 });
 
-router.get('/doctoroncall', async function(req, res, next) {
+router.get('/doctoroncall', function(req, res, next) {
   res.render('doctoroncall');
 });
 
