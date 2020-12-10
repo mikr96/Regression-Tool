@@ -43,9 +43,8 @@ for ( i = 0; i < s1.length; i++ ) {
             union.push(s2[i])            
         }
     }
-    //console.log(union)
+    
     var transpose = union.filter(f => !m.includes(f))
-    //console.log(`m=${JSON.stringify(m)}\nall=${JSON.stringify(union)}\ntranspose=${JSON.stringify(transpose)}`)
 
   // Exit early if no matches were found.
     if ( m.length === 0 ) {
@@ -57,7 +56,6 @@ for ( i = 0; i < s1.length; i++ ) {
         p      = 2;
 
     weight = weight + l * p * (1 - weight);
-    console.log(weight)
     return weight;
 }
 })();

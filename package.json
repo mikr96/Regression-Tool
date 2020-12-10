@@ -8,16 +8,19 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "async": "^3.2.0",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "debug": "^2.6.9",
     "ejs": "^2.7.4",
     "express": "^4.16.4",
     "http-errors": "^1.6.3",
+    "jaccard": "^0.4.0",
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.1",
     "node-localstorage": "^2.1.5",
     "path": "^0.12.7",
+    "requirejs": "^2.3.6",
     "sweetalert2": "^9.8.2",
     "xlsx": "^0.15.5"
   },
