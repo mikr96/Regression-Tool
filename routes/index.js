@@ -6,8 +6,12 @@ router.get('/', function(req, res, next) {
   res.render('homepage');
 });
 
-router.get('/TCP', function(req, res, next) {
+router.get('/TCP-S', function(req, res, next) {
   res.render('TCP');
+});
+
+router.get('/TCP-F', function(req, res, next) {
+  res.render('TCPF');
 });
 
 router.get('/TCS', function(req, res, next) {

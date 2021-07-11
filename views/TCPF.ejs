@@ -15,48 +15,93 @@
                     <div class="col-md-2 col-sm-12">
                         <button class="btn btn-info btn-block">STEP 1</button>
                     </div>
-                    <div class="col-md-6 col-sm-12">
-                        <strong><label><h4>SELECTION ALGORITHM</h4></label></strong>
-                        <div class="form-check">
-                          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1">
-                          <label class="form-check-label" for="exampleRadios1">
-                              Genetic Algorithm
-                          </label>
-                        </div>
-                        <div class="form-check">
-                          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-                          <label class="form-check-label" for="exampleRadios2">
-                              Greedy
-                          </label>
-                        </div>
-                        <div class="form-check">
-                          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3">
-                          <label class="form-check-label" for="exampleRadios3">
-                              Adaptive Random Testing
-                          </label>
+                    <div class="col-md-10 col-sm-12">
+                        <strong><h4><label>MATCH TEST CASES WITH FAULTS</label></h4></strong>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <textarea class="form-control" id="testcases" name="testcases" rows="20" placeholder="Put your previous version of code here" style="width: 100%;"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea class="form-control" id="faults" name="faults" rows="20" placeholder="Put fault here from all versions" style="width: 100%;"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-2 col-sm-12">
-                    <button class="btn btn-info btn-block">STEP 2</button>
+                <div class="col-md-2"></div>
+                <div class="col-md-5 col-sm-12">
+                    <button onclick="matchFaults()" class="btn btn-primary btn-block">MATCHING FAULTS</button>
                 </div>
-                <div class="col-md-10 col-sm-12">
-                    <strong><h4><label>FAULTS</label></h4></strong>
-                    <textarea class="form-control" id="faults" name="faults" rows="20" placeholder="Put fault here from all versions" style="width: 100%;"></textarea>
+                <div class="col-md-5 col-sm-12">
+                    <button id="download" onclick="download()" class="btn btn-success btn-block" disabled>DOWNLOAD MATCHED</button>
                 </div>
             </div>
             <br />
+        </div>
+        <div class="m-4">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-2 col-sm-12">
+                        <button class="btn btn-info btn-block">STEP 2</button>
+                    </div>
+                    <div class="col-md-10 col-sm-12">
+                        <strong><h4><label>APPLY GENETIC ALGORITHM</label></h4></strong>
+                        <div class="row">
+                            <ul>
+                                <li>Apply GA on each group test cases that were assigned based on fault coverage. 
+                                So for the first round, we will test our experiment on test cases with 4 weight.</li>
+                                <li>First randomly generate population based on population size</li>
+                                <li>Then multiply, f(x) = x2</li>
+                                <li>Then calculate the probability by dividing x2 with total x2. The total of the probability should be 1</li>
+                                <li>Then calculate the expected count by dividing x2 with average total of x2. </li>
+                                <li>Get actual count and the highest will be selected to next process, crossover and mutation</li>
+                                <li>Then, new generation will be formed. Continue all steps above until path exhausted</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-5 col-sm-12">
-                    <button onclick="faultTCS()" class="btn btn-primary btn-block">SORT FAULTS</button>
+                    <button onclick="geneticAlgorithm()" class="btn btn-primary btn-block">START PROCESSING</button>
                 </div>
                 <div class="col-md-5 col-sm-12">
-                    <button id="btnAPFD" onclick="APFDTCS()" class="btn btn-success btn-block" disabled>CALCULATE APFD</button>
+                    <button id="download" onclick="download()" class="btn btn-success btn-block" disabled>DOWNLOAD TC ORDER</button>
                 </div>
             </div>
+            <br />
+        </div>
+        <div class="m-4">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-2 col-sm-12">
+                        <button class="btn btn-info btn-block">STEP 3</button>
+                    </div>
+                    <div class="col-md-10 col-sm-12">
+                        <strong><h4><label>APPLY GENETIC ALGORITHM</label></h4></strong>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <textarea class="form-control" id="previouss" name="previouss" rows="20" placeholder="Put your previous version of code here" style="width: 100%;"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea class="form-control" id="faultss" name="faultss" rows="20" placeholder="Put fault here from all versions" style="width: 100%;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-5 col-sm-12">
+                    <button onclick="next()" class="btn btn-primary btn-block">MATCHING FAULTS</button>
+                </div>
+                <div class="col-md-5 col-sm-12">
+                    <button id="download" onclick="download()" class="btn btn-success btn-block" disabled>DOWNLOAD MATCHED</button>
+                </div>
+            </div>
+            <br />
         </div>
         <div id="myModal" class="modal fade">
             <div class="modal-dialog" style="position: relative; height: 100%; width: 100%;">
@@ -74,251 +119,379 @@
 
 <script>
 
-    var radioValue, progress = 0, iteration = 0, length = 0, result = [], strMatrix = [], values, strMatrix2 = [], sum = 0, pt = []
+    var radioValue, progress = 0, faultData = new Array(1608), arrData = [], iteration = 0, length = 0, result = [], strMatrix = [], values, strMatrix2 = [], sum = 0, pt = []
+    var testCasesWithWeight1 = [], testCasesWithWeight2 = [], testCasesWithWeight3 = [], testCasesWithWeight4 = []
     const percent = 100
 
-    function main(){
-        double pa=0.3;  
-      
-        generate_random_population(); 
-        for (int iteration = 1;iteration < 10;iteration++)
-        {    
-        for (int i=0;i<population_size;i++)      // iterate the population
-        {
-        Random r = new Random();
-        double k= r.nextDouble();  
-        double x_new = x[i] + (double)(1^Math.round(LevyFlight()));
-        // Levy Flight can put our values out-of-bound
-        if (x[i]>UB)
-            x[i]=LB-((UB-LB)*r.nextDouble());
-                    
-        if (x[i]<LB)
-            x[i]=LB+((UB-LB)*r.nextDouble());
+    async function matchFaults() {
+        sortFaults()
+    }
+
+    async function geneticAlgorithm() {
+        let x = generate_random_population()
+    }
+
+    async function sortFaults() {
+
+        var data = $('#faults').val()
+        var lines = [];
+        $.each(data.split(/\n/), function(i, line){
+            if(line){
+                lines.push(line);
+            } else {
+                lines.push("");
+            }
+        });
+
+        for (i = 0; i < lines.length; i++) {
+            // First Iteration
+            if(i==0) {
+
+                // Get all 41 versions faults
+                for(let j=1; j < 42; j++){
+                    arrData.push(lines[i+j])
+                }
+                arrData.sort()
+
+                // Restructure string (del -)
+                for(let k=0; k < 41; k++){
+                let val = arrData[k].split('-');
+                arrData[k] = val[val.length-1]
+                }
+                
+                let count = true, arr = []
+                do{
+                let index = findFault(arrData) 
+                if(index<0) {
+                    count=false
+                } else {
+                    arr.push(index+1)
+                    count=false
+                }
+                }while(count)
+
+                faultData[i] = arr
+                
+            } else if(!(i%42)) {        //Any iteration within every 41 versions of faults
+                arrData = []
+                obj = {}
+
+                for(let j=1; j < 42; j++){
+                    arrData.push(lines[i+j])
+                }
+                arrData.sort()
+
+                for(let k=0; k < 41; k++){
+                    let val = arrData[k].split('-');
+                    arrData[k] = val[val.length-1]
+                }
+
+                let count = true, arr = []
+                do{
+                    let index = findFault(arrData) 
+                    if(index<0) {
+                    count=false
+                    } else {
+                    arr.push(index+1)
+                    count = false
+                    }
+                }while(count)
+                
+                let index = lines[i].split('unitest')
+                faultData[index[1]] = arr
+            }
+        }
+
+        let weightedTestCases = faultData.map((res, index) => {
+                                if(res[0]>0 && res[0]<11) {
+                                    return [index, 4]
+                                }
+                                else if(res[0]>10 && res[0]<21) {
+                                    return [index, 3]
+                                }
+                                else if(res[0]>20 && res[0]<31) {
+                                    return [index, 2]
+                                }
+                                else if(res[0]>30 && res[0]<41) {
+                                    return [index, 1]
+                                }
+                                else if(res[0]>40) {
+                                    return [index, 0]
+                                }
+                            })
+
+        //1006 test cases yang tak de faults
+        let undefinedTestCases = weightedTestCases.filter(removeUndefined)
+
+        let max = 0
+
+        do {
+            
+            max += 1
+        } while (max > 906)
+
         
-        double f_current = ObjectiveFunction(x[i]);
-        double f_new = ObjectiveFunction(x_new);      
-        if (f_new < f_current) // new x is better than current x
-            x[i]=x_new;        // for minimum problem      
-        }     
         
-        // Elitism with pa probability
-        for (int j=0;j<Math.round(pa*population_size);j++)
-        {
-            Random r = new Random();
-            double k= r.nextDouble();  
-            
-            int idx = find_index_of_poor_value();
-            
-            double x_new;   
-        // generate new random solution
-            if (k>0.5)
-            x_new=LB-((UB-LB)*r.nextDouble());
-            else
-            x_new=LB+((UB-LB)*r.nextDouble()); 
-            
-            if (x_new>UB)
-            x_new=LB;
-            
-            if (x_new<LB)
-            x_new=UB;
-            
-            double f_poor_value= ObjectiveFunction(x[idx]);
-            double f_new = ObjectiveFunction(x_new);  
-            if (f_new < f_poor_value) // new x is better than current x
-            x[idx]=x_new;        // for minimum problem   
-        }  
-            
-        }  
-        double best_solution = find_best_value();
-        System.out.println ("Best solution = "+best_solution);   
+        // //divide test cases according to assigned weight
+        // testCasesWithWeight4 = undefinedTestCases.filter(filterWeight4)
+        // testCasesWithWeight3 = undefinedTestCases.filter(filterWeight3)
+        // testCasesWithWeight2 = undefinedTestCases.filter(filterWeight2)
+        // testCasesWithWeight1 = undefinedTestCases.filter(filterWeight1)
+        
+
+        if(i==lines.length) {
+            Swal.fire(
+                'Successful!',
+                'Done Matching Faults!',
+                'success'
+            ).then(result => {
+                if(result.value) {
+                $("#myModal").modal('hide');
+                $('#btnAPFD').prop('disabled', false);
+                }
+            })
+        }
+    }
+
+    removeUndefined = function (value) {
+        return value
+    }
+
+    filterWeight4 = function (value) {
+        return value[1] == 4
+    }
+
+    filterWeight3 = function (value) {
+        return value[1] == 3
+    }
+
+    filterWeight2 = function (value) {
+        return value[1] == 2
+    }
+
+    filterWeight1 = function (value) {
+        return value[1] == 1
     }
 
     // generate random population
-    function generate_random_population()
-    {
-        double p1 = 0.5;
-        
-        for (int i=0;i<population_size;i++)
-        {
-            Random r = new Random();
-            double k= r.nextDouble();
-            if (k>p1)
-                x[i]=LB-((UB-LB)*r.nextDouble());
-            else
-                x[i]=LB+((UB-LB)*r.nextDouble()); 
-                
-            if (x[i]>UB)
-                x[i]=LB;
-                
-            if (x[i]<LB)
-                x[i]=UB;
+    generate_random_population = function () {
+
+        var test_order = []
+        const exclude = [123, 154, 197, 222, 284, 342, 343, 377, 412, 425, 487, 500, 509, 587, 612, 787, 864, 899]
+
+        for(let i=0;i<34;i++) {
+            let r = Math.floor(Math.random() * 906);
+            while (exclude.findIndex(r)) {
+                r = Math.floor(Math.random() * 906)
+            }
+            test_order.push(`T${r}`)
         }
+
+        return test_order;
     }
 
-    function ObjectiveFunction (x)
-    {
-      return ((x-2)*(x-4));
-    }
+    // random crossover
+    random_crossover = function (T1, T2) {
 
-    
+        let crossover_point = Math.floor(Math.random()*T1.length)
 
-    function jaccard(){
-        var jaccard = require('jaccard');
-        var a = [
-                '1',
-                '2',
-                '3'
-                ];
-
-        var b = [
-                '3',
-                '4',
-                '5'
-                ];
-
-                console.log(
-                    jaccard.index(a, b)
-                );
-    }
-
-    async function next() {
-        iteration = 0
-        result = []
-        progress = 0
-        length = 0
-        strMatrix2 = []
-        strMatrix = []
-        sum = 0
-        pt = []
-        $('#myModal').modal({backdrop: 'static', keyboard: false}) 
-        $("#myModal").modal('show');
-        $('#progBar').attr('aria-valuenow', 0);
-        $('#progBar').css('width', '0%');
-
-        radioValue = $("input[name='exampleRadios']:checked").val();
-
-        values = $("#previous").val();
-        const array = values.split("\n");
-        array.length = 906
-        length = Math.pow(array.length, 2);
-        const process = () => new Promise (res => {
-            array.forEach((first, index) => {
-                array.forEach(async (second, ins) => {
-                    await calculate(first, second, index);
-                    if (index === array.length -1 && ins === array.length - 1) {
-                        await delay()
-                        // localStorage.setItem("results", JSON.stringify(result));
-                        await prioritize()
-                    }
-                });
-            });
-        })
-        await process();
-    };
-
-    async function calculate(first, second, index) {
-        await delay()
-        iteration = iteration + 1
-        progress = iteration/length*100
-        $('#progBar').attr('aria-valuenow', progress);
-        $('#progBar').css('width', `${progress}%`);
-        $('#progBar').html(`${progress}%`);
-        if(radioValue == 'option1') {
-            result.push(JaroWrinker(first, second))
-        } else if(radioValue == 'option2') {
-            result.push(LevenshteinDistance(first, second))
-        } else if(radioValue == 'option3') {
-            result.push(JaroWrinker(first, second))
-        } else if(radioValue == 'option4'){
-            result.push(JaroWrinker(first, second))
-        } else if(radioValue == 'option5'){
-            result.push(EnhancedJaroWrinker(first, second))
-        }
-    };
-
-    function delay() {
-        return new Promise(resolve => setTimeout(resolve, 1000));
-    };
-
-    async function prioritize() {
-        var data = [] , arr = [], length = 906;
-
-        var status = true, loop = true
-        var count = 0
-
-        const array = values.split("\n");
-        array.length = 906
-        let lengthArr = Math.pow(array.length, 2);
-        
-        //Converting array to matrix
-        while(1) {
-            if(count % lengthArr == 0) {
-                if(count > 0) {
-                data.push(arr)
-                arr = []
-                arr.push(result[count]);
-                count++
-                }
-            }
-            if (typeof result[count] === 'undefined'){
-                break;
-            }
-            arr.push(result[count]);
-            count++;
-        }
-
-        console.log(data)
-        
-        for(let i=0; i<=data[0].length; i++) {
-            if(i==0){
-                sum+=data[0][0]
-            } else if(i%length){
-                sum+=data[0][i]
-            } else {
-                strMatrix2.push(sum/length)
-                sum = 0
-                sum+=data[0][i]
-            }
-        }
-        
-        console.log(strMatrix2)
-        //Label matrix
-        strMatrix2.forEach((data, index) => {
-            strMatrix.push([`T${index+1}`, data])
-        })
-
-        console.log('StrMatrix: ' + strMatrix)
-        
-        //Sort data
-        strMatrix.sort(compareSecondColumn);
-        await delay()
-
-        pt = strMatrix.map(function(val) {
-                    return val[0];
-            });
-
-        console.log('PT: ' + pt)
-
-        Swal.fire(
-        'Successful!',
-        'You may now download the prioritized test cases !',
-        'success'
-        ).then(result => {
-            if(result.value) {
-                $("#myModal").modal('hide');
-                $('#download').prop('disabled', false);
+        let new_T1 = T1.map((item, index) => {
+            if(index>=crossover_point) {
+                return T2[index]
             }
         })
+
+        let new_T2 = T2.map((item, index) => {
+            if(index>=crossover_point) {
+                return T1[index]
+            }
+        })
+
+        return new_T1, new_T2
     }
 
-    function compareSecondColumn(a, b) {
-        if (a[1] === b[1]) {
-        return 0;
-        }
-        else {
-            return (a[1] < b[1]) ? -1 : 1;
-        }
+    // mutation test
+    mutation_test = function (T1, T2) {
+
+        const exclude = [123, 154, 197, 222, 284, 342, 343, 377, 412, 425, 487, 500, 509, 587, 612, 787, 864, 899]
+
+        let test_order_t1 = T1.forEach((item) => {
+                                let status = T1.findIndex(item)
+                                while(status) {
+                                    let new_T = Math.floor(Math.random() * 906)
+                                    if(!exclude.findIndex(new_T)) {
+                                        status = T1.findIndex(new_T)
+                                        item = new_T
+                                    }
+                                }
+                                return item
+                            })
+
+        let test_order_t2 = T2.forEach((item) => {
+                                let status = T2.findIndex(item)
+                                while(status) {
+                                    let new_T = Math.floor(Math.random() * 906)
+                                    if(!exclude.findIndex(new_T)) {
+                                        status = T1.findIndex(new_T)
+                                        item = new_T
+                                    }
+                                }
+                                return item
+                            })
+
+        return test_order_t1, test_order_t2
     }
+
+    findFault = function (arrData) {
+        let index = arrData.findIndex((arrData) => {
+                    return arrData == 1
+                    })
+        delete arrData[index]
+        return index
+    }
+
+    checkFault = function (arrData) {
+        return arrData == 1
+    }
+
+    // async function next() {
+    //     iteration = 0
+    //     result = []
+    //     progress = 0
+    //     length = 0
+    //     strMatrix2 = []
+    //     strMatrix = []
+    //     sum = 0
+    //     pt = []
+    //     $('#myModal').modal({backdrop: 'static', keyboard: false}) 
+    //     $("#myModal").modal('show');
+    //     $('#progBar').attr('aria-valuenow', 0);
+    //     $('#progBar').css('width', '0%');
+
+    //     values = $("#previous").val();
+    //     const array = values.split("\n");
+    //     array.length = 906
+    //     length = Math.pow(array.length, 2);
+    //     const process = () => new Promise (res => {
+            
+    //         array.forEach((first, index) => {
+    //             array.forEach(async (second, ins) => {
+                    
+    //                 // await calculate(first, second, index);
+    //                 // if (index === array.length -1 && ins === array.length - 1) {
+    //                 //     await delay()
+    //                 //     // localStorage.setItem("results", JSON.stringify(result));
+    //                 //     await prioritize()
+    //                 // }
+    //             });
+    //         });
+    //     })
+    //     await process();
+    // };
+
+    // async function calculate(first, second, index) {
+    //     await delay()
+    //     iteration = iteration + 1
+    //     progress = iteration/length*100
+    //     $('#progBar').attr('aria-valuenow', progress);
+    //     $('#progBar').css('width', `${progress}%`);
+    //     $('#progBar').html(`${progress}%`);
+    //     if(radioValue == 'option1') {
+    //         result.push(JaroWrinker(first, second))
+    //     } else if(radioValue == 'option2') {
+    //         result.push(LevenshteinDistance(first, second))
+    //     } else if(radioValue == 'option3') {
+    //         result.push(JaroWrinker(first, second))
+    //     } else if(radioValue == 'option4'){
+    //         result.push(JaroWrinker(first, second))
+    //     } else if(radioValue == 'option5'){
+    //         result.push(EnhancedJaroWrinker(first, second))
+    //     }
+    // };
+
+    // function delay() {
+    //     return new Promise(resolve => setTimeout(resolve, 1000));
+    // };
+
+    // async function prioritize() {
+    //     var data = [] , arr = [], length = 906;
+
+    //     var status = true, loop = true
+    //     var count = 0
+
+    //     const array = values.split("\n");
+    //     array.length = 906
+    //     let lengthArr = Math.pow(array.length, 2);
+        
+    //     //Converting array to matrix
+    //     while(1) {
+    //         if(count % lengthArr == 0) {
+    //             if(count > 0) {
+    //             data.push(arr)
+    //             arr = []
+    //             arr.push(result[count]);
+    //             count++
+    //             }
+    //         }
+    //         if (typeof result[count] === 'undefined'){
+    //             break;
+    //         }
+    //         arr.push(result[count]);
+    //         count++;
+    //     }
+
+    //     console.log(data)
+        
+    //     for(let i=0; i<=data[0].length; i++) {
+    //         if(i==0){
+    //             sum+=data[0][0]
+    //         } else if(i%length){
+    //             sum+=data[0][i]
+    //         } else {
+    //             strMatrix2.push(sum/length)
+    //             sum = 0
+    //             sum+=data[0][i]
+    //         }
+    //     }
+        
+    //     console.log(strMatrix2)
+    //     //Label matrix
+    //     strMatrix2.forEach((data, index) => {
+    //         strMatrix.push([`T${index+1}`, data])
+    //     })
+
+    //     console.log('StrMatrix: ' + strMatrix)
+        
+    //     //Sort data
+    //     strMatrix.sort(compareSecondColumn);
+    //     await delay()
+
+    //     pt = strMatrix.map(function(val) {
+    //                 return val[0];
+    //         });
+
+    //     console.log('PT: ' + pt)
+
+    //     Swal.fire(
+    //     'Successful!',
+    //     'You may now download the prioritized test cases !',
+    //     'success'
+    //     ).then(result => {
+    //         if(result.value) {
+    //             $("#myModal").modal('hide');
+    //             $('#download').prop('disabled', false);
+    //         }
+    //     })
+    // }
+
+    // function compareSecondColumn(a, b) {
+    //     if (a[1] === b[1]) {
+    //     return 0;
+    //     }
+    //     else {
+    //         return (a[1] < b[1]) ? -1 : 1;
+    //     }
+    // }
 
     function download() {
         var ws_data = [['TC ID' , 'Similarity (%)']]
@@ -349,6 +522,7 @@
         return buf;    
     }
 </script>
+
 <script>
     const data = `unitest0
 v-01-1
@@ -67886,6 +68060,26 @@ v-06-0
 v-07-0
 v-08-0
 v-09-0`
+const data2 = ` 958 1 1 2597  574 4253 0  399  400 0 0 1
+1078 1 1 567 655 0 637 906 0 1 1
+1078 1 1 655 0 637 906 0 1 1
+1078 1 1 0 637 906 0 1 1
+1078 1 1 637 906 0 1 1
+1078 1 1 581 655 0 637 906 0 1 1
+1078 1 1 581 0 637 906 0 1 1
+1078 1 1 581 637 906 0 1 1
+1078 1 1 581 906 0 1 1
+1078 1 1 581 906 1 1
+1078 1 1 581 567 655 0 906 0 1 1
+1078 1 1 581 567 655 0 0 1 1
+1078 1 1 581 567 655 0 1 1
+1078 1 1 581 567 655 0 1
+1078 1 1 581 567 0 637 0 1 1
+1078 1 1 567 655 0 906 0 1 1
+1078 1 581 655 0 906 0 1 1
+1078 1 1 655 0 906 0 1 1
+1078 1 655 0 906 0 1 1
+1078 1 1 637 906 1 1`
 $('#faults').val(data)
-
+$('#testcases').val(data2)
 </script>
