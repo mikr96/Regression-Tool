@@ -9,47 +9,72 @@
 <body>
 <% include partials/header %>
     <div class="container-fluid">
-        <div class="m-4">
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-2 col-sm-12">
-                        <button class="btn btn-info btn-block">STEP 1</button>
+        <div class="p-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4><b>HYBRIDIZATION FOR TCP AND TCS</b></h4>
+                    <p>Follow the steps and you are good to go!</p>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-12">
+                            <button class="btn btn-info btn-block">STEP 1</button>
+                        </div>
+                        <div class="col-md-10 col-sm-12">
+                            <strong><h4><label>INPUT TCP TEST PLAN</label></h4></strong>
+                                <div class="form-group">
+                                    <label for="formGroupExampleInput">TCP SIMILARITY</label>
+                                    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Input test plan">
+                                </div>
+                                <div class="form-group">
+                                    <label for="formGroupExampleInput">TCP FAULT</label>
+                                    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Input test plan">
+                                </div>
+                        </div>
                     </div>
-                    <div class="col-md-10 col-sm-12">
-                        <strong><h4><label>TEST ORDER FROM PRIORITIZED LIST</label></h4></strong>
-                        <textarea class="form-control" rows="20" placeholder="Put test case execution order here" style="width: 100%;"></textarea>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-12">
+                            <button class="btn btn-info btn-block">STEP 2</button>
+                        </div>
+                        <div class="col-md-10 col-sm-12">
+                            <strong><h4><label>SET PRIORITY</label></h4></strong>
+                            <br/>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <span>Similarity</span>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="range" class="form-control-range" id="formControlRange">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <span>Fault</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-12">
+                            <button class="btn btn-info btn-block">STEP 3</button>
+                        </div>
+                        <div class="col-md-10 col-sm-12">
+                            <strong><h4><label>GENERATE TEST PLAN</label></h4></strong>
+                            <div class="my-4">
+                                <span class="border p-2 py-3 d-block text-uppercase text-monospace">The generated test plan will display here. Click button below to generate new TP.</span>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button class="btn btn-primary btn-block" onclick="hybrid()">Generate!</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button class="btn btn-primary btn-block" onclick="calcAPFD()">Calculate APFD</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-2 col-sm-12">
-                    <button class="btn btn-info btn-block">STEP 2</button>
-                </div>
-                <div class="col-md-10 col-sm-12">
-                    <strong><h4><label>TEST ORDER FROM SELECTED LIST</label></h4></strong>
-                    <textarea class="form-control" rows="20" placeholder="Put test case execution order here" style="width: 100%;"></textarea>
-                </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-md-2 col-sm-12">
-                    <button class="btn btn-info btn-block">STEP 3</button>
-                </div>
-                <div class="col-md-10 col-sm-12">
-                    <strong><h4><label>FAULTS</label></h4></strong>
-                    <textarea class="form-control" id="faults" name="faults" rows="20" placeholder="Put fault here from all versions" style="width: 100%;"></textarea>
-                </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-md-2"></div>
-                <div class="col-md-5 col-sm-12">
-                    <button onclick="faults()" class="btn btn-primary btn-block">SORT FAULTS</button>
-                </div>
-                <div class="col-md-5 col-sm-12">
-                    <button id="btnAPFD" onclick="APFDHYBRID()" class="btn btn-success btn-block" disabled>CALCULATE APFD</button>
-                </div>
-            </div>
+              </div>
         </div>
         <div id="myModal" class="modal fade">
             <div class="modal-dialog" style="position: relative; height: 100%; width: 100%;">
