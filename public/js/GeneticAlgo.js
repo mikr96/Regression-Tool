@@ -7,7 +7,7 @@ async function matchFaults() {
     var lines = [];
     const formDataset = async () => {
         return new Promise((resolve, reject) => {
-            var data = $('#faults').val()
+            var data = faultTCAS
             try {
                 $.each(data.split(/\n/), function(i, line){
                     if(line){
@@ -109,18 +109,18 @@ async function matchFaults() {
         
     definedTestCases = await formDataset()
 
-    if(i==lines.length) {
-        Swal.fire(
-            'Successful!',
-            'Done Matching Faults!',
-            'success'
-        ).then(result => {
-            if(result.value) {
-            $("#myModal").modal('hide');
-            $('#btnAPFD').prop('disabled', false);
-            }
-        })
-    }
+    // if(i==lines.length) {
+    //     Swal.fire(
+    //         'Successful!',
+    //         'Done Matching Faults!',
+    //         'success'
+    //     ).then(result => {
+    //         if(result.value) {
+    //         $("#myModal").modal('hide');
+    //         $('#btnAPFD').prop('disabled', false);
+    //         }
+    //     })
+    // }
 }
 
 var dur, start, end
@@ -154,7 +154,7 @@ async function geneticAlgorithm() {
                 // n = number of test cases exposed = 902
                 // m = number of faults version = 41 // // 41 
 
-                let data = $('#faults').val()
+                let data = faultTCAS
                 const sizeUnittest = 42;
                 const strings = data.split(/\r?\n/);
                 const fault_version = new Array(42);
@@ -183,16 +183,19 @@ async function geneticAlgorithm() {
                     fault_version[index] = arr.filter((a) => a);
                 })
 
+
                 // Calculate total faults
                 const total_tl = await testcase_faults(fault_version, testOrderTemp)
-
                 // Loop and calculate apfd for each set
-                let apfd_all = [], n = 602, m = 35
+                let apfd_all = [], n = 603, m = 35
                 for(let p = 0; p < total_tl.length; p++) {
                     let apfd = (total_tl[p]/(n*m)) + (1/(2*n))
                     apfd_all.push(apfd)
                 }
                 if(apfd_all) {
+                    let maxApfd = Math.max(...apfd_all)
+                    let maxTotal = apfd_all.findIndex(res => res === maxApfd)
+                    console.log(total_tl[maxTotal])
                     resolve(apfd_all)
                 }
                 
@@ -215,13 +218,15 @@ async function geneticAlgorithm() {
 
                 let fault_detection = [], pass = true
                 faults.forEach((element, index, arrayFault) => {
-                    element.forEach((fault, indexFault) => {
-                        let a = testArray.indexOf(fault)
-                        if(a>0 && pass){
-                          fault_detection.push(indexFault*a)
-                          pass = false
+                    if(element != [] && element != '' && element != undefined) {
+                        for(let i=0; i<element.length; i++) {
+                            let a = testArray.indexOf(element[i])
+                            if(a>0 && pass){
+                              fault_detection.push((i+1)*a)
+                              pass = false
+                            }
                         }
-                    })
+                    }
                     pass = true
                     if(index === (arrayFault.length-1)) {
                         total = 0 
@@ -323,7 +328,7 @@ async function geneticAlgorithm() {
 
     let max = Math.max(...apfd_final)
 
-    if(max <= 0.90) {
+    if(max <= 0.60) {
         generation++
         let maxi = 0
         let temp = removeArray(apfd_final, max)
@@ -352,16 +357,33 @@ async function geneticAlgorithm() {
         console.log(`Highest APFD: ${max}`)
         max = apfd_final.findIndex(res => res === max)
         rows.push(['TEST ORDER =>', testOrderFinal[max]])
-        Swal.fire(
-            'Successful!',
-            'Done Pioritizing Order!',
-            'success'
-        ).then(result => {
-            if(result.value) {
-            $("#myModal").modal('hide');
-            $('#download').prop('disabled', false);
-        }
-        })
+        FTP = await Promise.all(
+                    testOrderFinal[max]
+                    .map(e => e[0])
+                    .map(e => {
+                        if((e.toString()).length == 3) {
+                            return `TC0${e}`
+                        }
+                        else if((e.toString()).length == 2) {
+                            return `TC00${e}`
+                        }
+                        else if((e.toString()).length == 1) {
+                            return `TC000${e}`
+                        }
+                        else if((e.toString()).length == 4) {
+                            return `TC${e}`
+                        }
+                    }))
+        // Swal.fire(
+        //     'Successful!',
+        //     'Done Pioritizing Order!',
+        //     'success'
+        // ).then(result => {
+        //     if(result.value) {
+        //     $("#myModal").modal('hide');
+        //     $('#download').prop('disabled', false);
+        // }
+        // })
     }
 }
 
