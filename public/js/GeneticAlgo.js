@@ -74,10 +74,7 @@ async function matchFaults() {
                         let index = lines[i].split('unitest')
                         faultData[index[1]] = arr
                     }
-                }
-
-                
-                
+                }                
             
                 let weightedTestCases = faultData.map((res, index) => {
                                         if(res[0]>0 && res[0]<11) {
@@ -99,7 +96,7 @@ async function matchFaults() {
                 //1605 - 602 
                 let unresolvedA = weightedTestCases.filter(e => e)
                 if(unresolvedA) {
-                    resolve(unresolvedA)
+                    resolve(weightedTestCases)
                 }
             } catch (err) {
                 reject(err)
@@ -108,32 +105,35 @@ async function matchFaults() {
     } 
         
     definedTestCases = await formDataset()
-
-    // if(i==lines.length) {
-    //     Swal.fire(
-    //         'Successful!',
-    //         'Done Matching Faults!',
-    //         'success'
-    //     ).then(result => {
-    //         if(result.value) {
-    //         $("#myModal").modal('hide');
-    //         $('#btnAPFD').prop('disabled', false);
-    //         }
-    //     })
-    // }
+    console.log(definedTestCases)
+    if(i==lines.length) {
+        Swal.fire(
+            'Successful!',
+            'Done Cleaning Faults!',
+            'success'
+        ).then(result => {
+            if(result.value) {
+            $("#myModal").modal('hide');
+            $('#btnAPFD').prop('disabled', false);
+            }
+        })
+    }
 }
 
-var dur, start, end
+var dur, start, end, timetaken = true
 
 async function geneticAlgorithm() {
+    if(timetaken) {
+        start = new Date().getTime()
+        timetaken = false
+    }
     const t0 = performance.now()
-    start = new Date().getTime()
     const genPopulation = async () => {
         return new Promise (async (resolve, reject) => {
             try {
-                // Generate 10 sets of test cases with 34 length
+                // Generate 10 sets of test cases with 601 length
                 const testOrder = await generateTestSets(definedTestCases)
-                const currentOrder = deepCopy(testOrder);
+                // const currentOrder = deepCopy(testOrder)
             
                 // Remove duplicates
                 const testOrderNew = await removeDuplicates(testOrder)
@@ -186,8 +186,10 @@ async function geneticAlgorithm() {
 
                 // Calculate total faults
                 const total_tl = await testcase_faults(fault_version, testOrderTemp)
+
                 // Loop and calculate apfd for each set
-                let apfd_all = [], n = 603, m = 35
+                // Total test case 1608 tetapi hanya 602 sahaja yang ada faults
+                let apfd_all = [], n = 602, m = 41
                 for(let p = 0; p < total_tl.length; p++) {
                     let apfd = (total_tl[p]/(n*m)) + (1/(2*n))
                     apfd_all.push(apfd)
@@ -195,7 +197,6 @@ async function geneticAlgorithm() {
                 if(apfd_all) {
                     let maxApfd = Math.max(...apfd_all)
                     let maxTotal = apfd_all.findIndex(res => res === maxApfd)
-                    console.log(total_tl[maxTotal])
                     resolve(apfd_all)
                 }
                 
@@ -210,7 +211,7 @@ async function geneticAlgorithm() {
             let total_all = []
             let total
             let proceed = false
-            
+            // console.log(faults)
             testPlan.forEach((array, indexArray, arrayLength) => {
                 
                 let testArray = []
@@ -265,9 +266,9 @@ async function geneticAlgorithm() {
             
                 let ran = random(testOrderTemp[0].length)
                 let a = testOrderTemp[max].slice(0, ran)
-                let b = testOrderTemp[max].slice(ran, 35)
+                let b = testOrderTemp[max].slice(ran, testOrderTemp[max].length)
                 let c = testOrderTemp[maxi].slice(0, ran)
-                let d = testOrderTemp[maxi].slice(ran, 35)
+                let d = testOrderTemp[maxi].slice(ran, testOrderTemp[max].length)
             
                 if (a && b && c && d) {
                     testOrderTemp[max] = a.concat(d)
@@ -328,14 +329,16 @@ async function geneticAlgorithm() {
 
     let max = Math.max(...apfd_final)
 
-    if(max <= 0.60) {
+    if(max < 0.95 || max > 1.00) {
         generation++
         let maxi = 0
         let temp = removeArray(apfd_final, max)
         maxi = Math.max(...temp)
         
         if(max >= 0.6) {
-            console.log(`No. of Generation: ${generation}`)
+            // console.log(apfd_final)
+            // console.log(testOrderFinal)
+            // console.log(`No. of Generation: ${generation}`)
             rows.push([generation, max])
         }
         max = apfd_final.findIndex(res => res === max)    // show index position highest apfd
@@ -345,7 +348,7 @@ async function geneticAlgorithm() {
         second = testOrderFinal[maxi]
 
         await geneticAlgorithm()
-    } else {
+    } else if (max >= 0.95 && max < 1.00) {
         generation++
         rows.push([generation, max])
         const t1 = performance.now()
@@ -356,7 +359,9 @@ async function geneticAlgorithm() {
         console.log(`No. of Generation: ${generation}`)
         console.log(`Highest APFD: ${max}`)
         max = apfd_final.findIndex(res => res === max)
+        console.log('TEST ORDER =>', testOrderFinal[max])
         rows.push(['TEST ORDER =>', testOrderFinal[max]])
+        generation = 0
         FTP = await Promise.all(
                     testOrderFinal[max]
                     .map(e => e[0])
@@ -468,13 +473,16 @@ const generateTestSets = (allTestCases) => {
             let testSet = [], testOrder = [], i = 0, j = 0
             
             // Randomize selection
-            if(generation > 0) {
+            if(generation > 0) { 
                 testOrder.push(first, second)
                 for(i = 0; i<8; i++) {
-                    for(j = 0; j<34; j++) {
-                        let index = random(601)
-                        testSet.push(allTestCases[index])
-                        if(i===7 && j===33) { resolve(testOrder) }
+                    for(j = 0; j<601; j++) {
+                        let randomTC = randomTestCase(testOrder)
+                        // let index = random(1608)
+                        testSet.push(randomTC)
+                        if(i===7 && j===600) { 
+                            resolve(testOrder) 
+                        }
                     }
     
                     testOrder.push(testSet)
@@ -482,10 +490,13 @@ const generateTestSets = (allTestCases) => {
                 }
             } else {
                 for(i = 0; i<10; i++) {
-                    for(j = 0; j<34; j++) {
-                        let index = random(601)
-                        testSet.push(allTestCases[index])
-                        if(i===9 && j===33) { resolve(testOrder) }
+                    for(j = 0; j<601; j++) {
+                        let randomTC = randomTestCase(testOrder)
+                        // let index = random(1608)
+                        testSet.push(randomTC)
+                        if(i===9 && j===600) { 
+                            resolve(testOrder) 
+                        }
                     }
     
                     testOrder.push(testSet)
@@ -501,9 +512,9 @@ const generateTestSets = (allTestCases) => {
 }
 
 const randomTestCase = (arr) => {
-    let index = random(601)
-    while(definedTestCases[index].length == 0  || definedTestCases[index] === null || definedTestCases[index] === undefined || arr.indexOf(index) >= 0){
-        index = random(601)
+    let index = random(1608)
+    while(definedTestCases[index] === null || definedTestCases[index] === undefined || arr.indexOf(index) >= 0){
+        index = random(1608)
     }
     return definedTestCases[index]
 }

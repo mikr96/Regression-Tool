@@ -37,9 +37,12 @@ const hybrid = async() => {
     const similarityTP = await trim(similarity)
     const faultTP = await trim(fault)
     const weight = parseInt(document.getElementById('formControlRange').value)
-    const weightedSimilarityTP = await assignWeight(similarityTP, weight, similarityTP.length)
-    const weightedFaultTP = await assignWeight(faultTP, 100 - weight, similarityTP.length)
+
+    const weightedSimilarityTP = await assignWeight(similarityTP, 100 - weight, similarityTP.length)
+    const weightedFaultTP = await assignWeight(faultTP, weight, similarityTP.length)
     let mergedTestOrder = []
+
+    console.log(weightedSimilarityTP.length)
 
     for (let i = 0; i < weightedSimilarityTP.length; i++) {
         if(weightedFaultTP[i] == [] || weightedFaultTP[i] == '' || weightedFaultTP[i] == undefined) {
@@ -62,11 +65,8 @@ const hybrid = async() => {
         }
     }
 
-    console.log(weightedSimilarityTP)
-    console.log(mergedTestOrder)
-
     let mergedTestOrderSorted = []
-    var current, max, currentList, selectedIndex;
+    var current, max, currentList, selectedIndex
     for (let i = 0; i < mergedTestOrder.length; i++) {
 
         if (i == 0) {
@@ -86,7 +86,7 @@ const hybrid = async() => {
         currentList.splice(selectedIndex, 1)
     }
 
-    
+    console.log(mergedTestOrderSorted)
     
     let testcases = mergedTestOrderSorted.map(e => e.substring(6, 0))
     mergedTestOrderSortedRemoved = []
@@ -100,13 +100,14 @@ const hybrid = async() => {
         mergedTestOrderSortedRemoved.splice(deleteIndex, 1)
     }
 
+    console.log(mergedTestOrderSortedRemoved)
+
     if (z == mergedTestOrderSortedRemoved.length) {
         Swal.fire(
             'Successful!',
             'Done Generate Test Order!',
             'success'
         ).then(result => {
-            console.log(mergedTestOrderSortedRemoved)
             if (result.value) {
                 $("#myModal").modal('hide');
                 $('#download').prop('disabled', false);
@@ -117,12 +118,13 @@ const hybrid = async() => {
 
 const getSimilarityTestPlan = async () => {
     STP = await getSimilarityTP()
-    const cleanedTestPlan = await Promise.all(
-                                STP
-                                .map(e => e.replaceAll('TC',''))
-                                .map(e => parseInt(e)))
-    console.log(cleanedTestPlan)
-    const APFD = await calcAPFD(cleanedTestPlan)
+    // const cleanedTestPlan = await Promise.all(
+    //                             STP
+    //                             .map(e => e.replaceAll('TC',''))
+    //                             .map(e => parseInt(e)))
+    const removedTCSimilarity = await removeTC(STP) 
+    console.log(removedTCSimilarity)
+    const APFD = await calcAPFD(removedTCSimilarity)
     if(APFD) {
         console.log(APFD)
         document.getElementById("similarityTP").value = STP.join(',')
