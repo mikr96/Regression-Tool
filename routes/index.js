@@ -22,6 +22,10 @@ router.get('/Hybrid', function(req, res, next) {
   res.render('Hybrid');
 });
 
+router.get('/TCPH', function(req, res, next) {
+  res.render('TCPH');
+});
+
 router.get('/result', function(req, res, next) {
   res.render('result');
 });

@@ -1,0 +1,138 @@
+<% include partials/layout %>
+<style>
+    @media screen and (max-width: 767px) {
+        .col-sm-12 {    
+            margin-bottom: 10px;
+        }
+    }
+</style>
+<body>
+<% include partials/header %>
+    <div class="container-fluid">
+        <div class="p-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4><b>HYBRIDIZATION FOR TCS AND TCP</b></h4>
+                    <p>Follow the steps and you are good to go!</p>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-12">
+                            <button class="btn btn-info btn-block">STEP 1</button>
+                        </div>
+                        <div class="col-md-10 col-sm-12">
+                            <strong><h4><label>INPUT TCS TEST PLAN</label></h4></strong>
+                                <div class="form-group">
+                                    <label for="formGroupExampleInput">TCS SIMILARITY</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" id="similarityEWTP" placeholder="Input test plan">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button onclick="getSimilarityEWTestPlan()" class="btn btn-primary btn-block">Get Test Plan</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="formGroupExampleInput">TCS FAULT</label>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" id="faultTP" placeholder="Input test plan">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button onclick="getFaultTestPlan()" class="btn btn-primary btn-block">Get Test Plan</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-12">
+                            <button class="btn btn-info btn-block">STEP 2</button>
+                        </div>
+                        <div class="col-md-10 col-sm-12">
+                            <strong><h4><label>SET PRIORITY</label></h4></strong>
+                            <br/>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <span>Similarity</span>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="range" class="form-control-range" id="formControlRange">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <span>Fault</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-12">
+                            <button class="btn btn-info btn-block">STEP 3</button>
+                        </div>
+                        <div class="col-md-10 col-sm-12">
+                            <strong><h4><label>GENERATE TEST PLAN</label></h4></strong>
+                            <div class="my-4">
+                                <span class="border p-2 py-3 d-block text-uppercase text-monospace">The generated test plan will display here. Click button below to generate new TP.</span>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button class="btn btn-primary btn-block" onclick="hybrid()">Generate!</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button class="btn btn-primary btn-block" onclick="APFD_Hybrid()">Calculate APFD</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+        </div>
+        <div id="myModal" class="modal fade">
+            <div class="modal-dialog" style="position: relative; height: 100%; width: 100%;">
+                <div class="modal-content" style="position:absolute; top: 50%; margin-top: -50px;">
+                    <div class="modal-body">
+                        <div class="progress">
+                            <div id="progBar" class="progress-bar progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        </div>    
+    </div>
+</body>
+
+<script>
+
+    function download() {
+        var ws_data = [['TC ID' , 'Similarity (%)']]
+        var wb = XLSX.utils.book_new();
+        wb.Props = {
+        Title: "String similarity",
+        Subject: "Prioritized Test Cases",
+        Author: "Irsyad Kamil",
+        CreatedDate: new Date(2017,12,19)
+        };
+        wb.SheetNames.push("Test Sheet", "Fault Sheet");
+        strMatrix.forEach((data, index) => {
+        ws_data.push(data);  //a row with 2 columns
+        })
+
+        var ts = XLSX.utils.aoa_to_sheet(ws_data);
+        var fs = XLSX.utils.aoa_to_sheet(ws_data);
+        wb.Sheets["Test Sheet"] = ts;
+        wb.Sheets["Fault Sheet"] = fs;
+        var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+        saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'test.xlsx');
+    }
+        
+    function s2ab(s) { 
+        var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+        var view = new Uint8Array(buf);  //create uint8array as viewer
+        for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+        return buf;    
+    }
+
+</script>

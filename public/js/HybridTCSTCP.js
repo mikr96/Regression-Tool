@@ -1,38 +1,5 @@
-// List Existing Function
-// 1. Random(length)
-// 2. Get Similarity Test Plan
-
-var mergedTestOrderSortedRemoved, STP, FTP
-
-const trim = (array) => {
-    return new Promise(resolve => {
-        let arrayTP = array.map(e => {
-            return e.replaceAll(' ','')
-        })
-        if (arrayTP) {
-            resolve(arrayTP)
-        }
-    })
-}
-
-const assignWeight = (array, weight, len) => {
-    return new Promise(resolve => {
-        let i = 0
-        let weightedArray = array.map(e => {
-            i++
-            if (e.length == 3) {
-                e = e.slice(0, 2) + '0' + e.slice(2)
-            }
-            return e + '-' + (len + 1 - i) * weight
-        })
-        if (weightedArray) {
-            resolve(weightedArray)
-        }
-    })
-}
-
-const hybrid = async() => {
-    const similarity = ($('#similarityTP').val()).split(",")
+const hybridEW = async() => {
+    const similarity = ($('#similarityEWTP').val()).split(",")
     const fault = ($('#faultTP').val()).split(",")
     const similarityTP = await trim(similarity)
     const faultTP = await trim(fault)
@@ -96,7 +63,7 @@ const hybrid = async() => {
 
     for (z = 0; z < mergedTestOrderSortedRemoved.length; z++) {
         let index = testcases.indexOf(mergedTestOrderSorted[z].substring(6, 0))
-        let deleteIndex = testcases.indexOf(mergedTestOrderSorted[z].substring(6, 0), index + 1);
+        let deleteIndex = testcases.indexOf(mergedTestOrderSorted[z].substring(6, 0), index + 1)
         mergedTestOrderSortedRemoved.splice(deleteIndex, 1)
     }
 
@@ -116,8 +83,8 @@ const hybrid = async() => {
     }
 }
 
-const getSimilarityTestPlan = async () => {
-    STP = await getSimilarityTP()
+const getSimilarityEWTestPlan = async () => {
+    STP = await getSimilarityEWTP()
     // const cleanedTestPlan = await Promise.all(
     //                             STP
     //                             .map(e => e.replaceAll('TC',''))
@@ -127,7 +94,7 @@ const getSimilarityTestPlan = async () => {
     const APFD = await calcAPFD(removedTCSimilarity, 'hybrid')
     if(APFD) {
         console.log(APFD)
-        document.getElementById("similarityTP").value = STP.join(',')
+        document.getElementById("similarityEWTP").value = STP.join(',')
         Swal.fire(
             'Successful!',
             'You may now download the prioritized test cases !',
@@ -138,48 +105,5 @@ const getSimilarityTestPlan = async () => {
                     $('#download').prop('disabled', false);
                 }
             })
-    }
-}
-
-const getFaultTestPlan = async () => {
-    await matchFaults()
-    await geneticAlgorithm()
-    if(FTP) {
-        document.getElementById("faultTP").value = FTP.join(',')
-        Swal.fire(
-            'Successful!',
-            'You may now download the prioritized test cases !',
-            'success'
-            ).then(result => {
-                if(result.value) {
-                    $("#myModal").modal('hide');
-                    $('#download').prop('disabled', false);
-                }
-            })
-    }
-}
-
-const APFD_Hybrid = async() => {
-    const cleanedTestPlan = await Promise.all(
-        mergedTestOrderSortedRemoved
-        .map(e => e.replaceAll('TC',''))
-        .map(e => {
-            let temp = e.split('-')
-            return parseInt(temp[0])
-        }))
-    const APFD = await calcAPFD(cleanedTestPlan, 'hybrid')
-    if(APFD) {
-        // times += 10
-        console.log(APFD)
-        Swal.fire(
-            'Successful!',
-            'Done Calculate APFD!',
-            'success'
-        ).then(result => {
-            if (result.value) {
-                $("#myModal").modal('hide');
-                $('#download').prop('disabled', false);
-            }
-        })
     }
 }

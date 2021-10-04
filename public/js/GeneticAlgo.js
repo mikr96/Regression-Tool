@@ -1,4 +1,4 @@
-var radioValue, progress = 0, faultData = new Array(1608), arrData = [], iteration = 0, length = 0, result = [], strMatrix = [], values, strMatrix2 = [], sum = 0, pt = [], definedTestCases = []
+var radioValue, progress = 0, faultData = new Array(49), arrData = [], iteration = 0, length = 0, result = [], strMatrix = [], values, strMatrix2 = [], sum = 0, pt = [], definedTestCases = []
 var testCasesWithWeight1 = [], testCasesWithWeight2 = [], testCasesWithWeight3 = [], testCasesWithWeight4 = [], valueArr = [], isDuplicate = true, pass = false, first = [], second = []
 var id, testOrder = [], generation = 0, csvContent, rows = []
 const percent = 100
@@ -7,7 +7,8 @@ async function matchFaults() {
     var lines = [];
     const formDataset = async () => {
         return new Promise((resolve, reject) => {
-            var data = faultTCAS
+            var data = faultRWS
+            // var data = faultTCAS
             try {
                 $.each(data.split(/\n/), function(i, line){
                     if(line){
@@ -50,14 +51,16 @@ async function matchFaults() {
                         arrData = []
                         obj = {}
             
-                        for(let j=1; j < 42; j++){
+                        for(let j=1; j < 42; j++) {
                             arrData.push(lines[i+j])
                         }
                         arrData.sort()
             
                         for(let k=0; k < 41; k++){
-                            let val = arrData[k].split('-');
-                            arrData[k] = val[val.length-1]
+                            if(arrData[k]) {
+                                let val = arrData[k].split('-');
+                                arrData[k] = val[val.length-1]
+                            }
                         }
             
                         let count = true, arr = []
@@ -106,18 +109,18 @@ async function matchFaults() {
         
     definedTestCases = await formDataset()
     console.log(definedTestCases)
-    if(i==lines.length) {
-        Swal.fire(
-            'Successful!',
-            'Done Cleaning Faults!',
-            'success'
-        ).then(result => {
-            if(result.value) {
-            $("#myModal").modal('hide');
-            $('#btnAPFD').prop('disabled', false);
-            }
-        })
-    }
+    // if(i==lines.length) {
+    //     Swal.fire(
+    //         'Successful!',
+    //         'Done Cleaning Faults!',
+    //         'success'
+    //     ).then(result => {
+    //         if(result.value) {
+    //         $("#myModal").modal('hide');
+    //         $('#btnAPFD').prop('disabled', false);
+    //         }
+    //     })
+    // }
 }
 
 var dur, start, end, timetaken = true
@@ -161,7 +164,7 @@ async function geneticAlgorithm() {
 
                 // Initialize fault multidimensional array
                 for (var i = 0; i < fault_version.length; i++) {
-                    fault_version[i] = new Array(1608);
+                    fault_version[i] = new Array(49);
                 }
 
                 // Trace and submit value into array
@@ -189,7 +192,7 @@ async function geneticAlgorithm() {
 
                 // Loop and calculate apfd for each set
                 // Total test case 1608 tetapi hanya 602 sahaja yang ada faults
-                let apfd_all = [], n = 602, m = 41
+                let apfd_all = [], n = 25, m = 11
                 for(let p = 0; p < total_tl.length; p++) {
                     let apfd = (total_tl[p]/(n*m)) + (1/(2*n))
                     apfd_all.push(apfd)
@@ -329,18 +332,17 @@ async function geneticAlgorithm() {
 
     let max = Math.max(...apfd_final)
 
-    if(max < 0.95 || max > 1.00) {
+    if(max <= 0.90 || max > 1.0) {
         generation++
+        console.log(generation)
         let maxi = 0
         let temp = removeArray(apfd_final, max)
         maxi = Math.max(...temp)
-        
-        if(max >= 0.6) {
-            // console.log(apfd_final)
-            // console.log(testOrderFinal)
-            // console.log(`No. of Generation: ${generation}`)
-            rows.push([generation, max])
-        }
+        // console.log(max)
+        // if(!(generation % 10)) {
+        //     console.log(generation)
+        //     console.log(apfd_final)
+        // }
         max = apfd_final.findIndex(res => res === max)    // show index position highest apfd
         maxi = apfd_final.findIndex(res => res === maxi)  // show index position 2nd highest apfd
 
@@ -476,11 +478,11 @@ const generateTestSets = (allTestCases) => {
             if(generation > 0) { 
                 testOrder.push(first, second)
                 for(i = 0; i<8; i++) {
-                    for(j = 0; j<601; j++) {
+                    for(j = 0; j<25; j++) {
                         let randomTC = randomTestCase(testOrder)
                         // let index = random(1608)
                         testSet.push(randomTC)
-                        if(i===7 && j===600) { 
+                        if(i===7 && j===24) { 
                             resolve(testOrder) 
                         }
                     }
@@ -490,11 +492,11 @@ const generateTestSets = (allTestCases) => {
                 }
             } else {
                 for(i = 0; i<10; i++) {
-                    for(j = 0; j<601; j++) {
+                    for(j = 0; j<25; j++) {
                         let randomTC = randomTestCase(testOrder)
                         // let index = random(1608)
                         testSet.push(randomTC)
-                        if(i===9 && j===600) { 
+                        if(i===9 && j===24) { 
                             resolve(testOrder) 
                         }
                     }
@@ -512,9 +514,9 @@ const generateTestSets = (allTestCases) => {
 }
 
 const randomTestCase = (arr) => {
-    let index = random(1608)
+    let index = random(49)
     while(definedTestCases[index] === null || definedTestCases[index] === undefined || arr.indexOf(index) >= 0){
-        index = random(1608)
+        index = random(49)
     }
     return definedTestCases[index]
 }

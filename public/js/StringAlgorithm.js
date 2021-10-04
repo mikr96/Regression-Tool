@@ -1,4 +1,4 @@
-var testCasesSimilarity
+var testCasesSimilarity, times = 10
 
 const unique = (str) => {
     return new Promise(resolve => {
@@ -216,10 +216,40 @@ const enhanceJaroWinkler = (s1, s2) => {
     
         const union = await unique(s1.concat(s2))
         const intersect = await filterSameChar(s1, s2)
+        var weight, l = 0.1, p = 4;
+
+        if (intersect == 0) {
+            weight = 0
+        } else {
+            weight = ((intersect / s1.length) + (intersect / s2.length) + (intersect - (union - intersect))/intersect) / 3
+        }
     
-        var weight = ((intersect / s1.length) + (intersect / s2.length) + (intersect - (union - intersect))/intersect) / 3,
-        l      = 0.1,
-        p      = 3;
+        let finalCalc = weight + l * p * (1 - weight)
+
+        if(finalCalc) {
+            resolve(finalCalc)
+        }
+    })
+}
+
+const enhanceJaroWinklerSelection = (s1, s2) => {
+    return new Promise(async (resolve) => {
+        if ( s1.length === 0 || s2.length === 0 ) {
+            resolve();
+        }
+        if ( s1 === s2 ) {
+            resolve();
+        }
+    
+        const union = await unique(s1.concat(s2))
+        const intersect = await filterSameChar(s1, s2)
+        var weight, l = 0.1, p = 4;
+
+        if (intersect == 0) {
+            weight = 0
+        } else {
+            weight = ((intersect / s1.length) + (intersect / s2.length) + (intersect - (union - intersect))/intersect) / 3
+        }
     
         let finalCalc = weight + l * p * (1 - weight)
 
@@ -277,6 +307,9 @@ const getSimilarities = (strings, usage) => {
                         tempSimilarity = await enhanceJaroWinkler(strings[j], strings[index])
                     }
                     firstSimilarity.push(tempSimilarity)
+                } else if (usage == 'existing') {
+                    tempSimilarity = await enhanceJaroWinklerSelection(strings[j], strings[index])
+                    firstSimilarity.push(tempSimilarity)
                 } else {
                     tempSimilarity = await enhanceJaroWinkler(strings[j], strings[index])
                     firstSimilarity.push(tempSimilarity)
@@ -315,7 +348,7 @@ const calcSimilarity = async () => {
     const dataString = await trim(values.split("\n"))
     dataString.length = Math.round(parseInt(dataString.length)*100/100)
     console.log(dataString.length)
-    const allSimilarity = await getSimilarities(dataString, 'single')
+    const allSimilarity = await getSimilarities(dataString, 'existing')
     if(allSimilarity) {
         const meanValue = await getMean(allSimilarity)
         const prioritizedSimilarity = await prioritizeSimilarity(allSimilarity)
@@ -335,10 +368,32 @@ const calcSimilarity = async () => {
     }
 }
 
+const getSimilarityEWTP = async () => {
+    return new Promise(async (resolve) => {
+        testCasesSimilarity = []
+        values = TCRWS
+        // values = TCJTCAS
+        
+        const dataString = await trim(values.split("\n"))
+        dataString.length = Math.round(parseInt(dataString.length)*100/100)
+        console.log(dataString.length)
+        const allSimilarity = await getSimilarities(dataString, 'existing')
+    
+        if(allSimilarity) {
+            console.log(allSimilarity)
+            const prioritizedSimilarity = await prioritizeSimilarity(allSimilarity)
+            testCasesSimilarity = await assignTC(prioritizedSimilarity)  
+            if(testCasesSimilarity) {
+                resolve(testCasesSimilarity)
+            }      
+        }
+    })
+}
+
 const getSimilarityTP = async () => {
     return new Promise(async (resolve) => {
         testCasesSimilarity = []
-        values = TCTCAS
+        values = TCRWS
         // values = TCJTCAS
         
         const dataString = await trim(values.split("\n"))
@@ -359,22 +414,22 @@ const getSimilarityTP = async () => {
 
 const calcSimilarityAPFD = async () => {
     const removedTCSimilarity = await removeTC(testCasesSimilarity) 
-    const APFD = await calcAPFD(removedTCSimilarity) 
+    const APFD = await calcAPFD(removedTCSimilarity, 'single') 
     if(APFD) {
         console.log(APFD)
     }
 }
 
-const calcAPFD = async (testPlan) => {
+const calcAPFD = async (testPlan, type) => {
     return new Promise (async (resolve) => {
-        let data = faultTCAS
+        let data = faultRWS
         const sizeUnittest = 42
         const strings = data.split(/\r?\n/)
         const fault_version = new Array(42)
     
         // Initialize fault multidimensional array
         for (var i = 0; i < fault_version.length; i++) {
-            fault_version[i] = new Array(1608);
+            fault_version[i] = new Array(testPlan.length);
         }
     
         // Trace and submit value into array
@@ -395,14 +450,22 @@ const calcAPFD = async (testPlan) => {
         fault_version.forEach((arr, index) => {
             fault_version[index] = arr.filter((a) => a)
         })
+
+        let n, m
+
+        if(type == 'hybrid') {
+            n = 25
+            m = 4
+            // testPlan.length = Math.round(parseInt(testPlan.length)*times/100)
+        } else {
+            n = 49
+            m = 4
+        }
     
         // Calculate total faults
         const total_tl = await testcase_faults(fault_version, testPlan)
-        console.log(total_tl)
 
         // Loop and calculate apfd for each set
-        let n = testPlan.length,
-            m = 41
         const apfd = (total_tl / (n * m)) + (1 / (2 * n))
         if(apfd) {
             resolve(apfd)
@@ -421,7 +484,7 @@ const testcase_faults = async(faults, testPlan) => {
                 for(let i=0;i<element.length;i++) {
                     let a = testPlan.indexOf(element[i])
                     if (a > 0 && pass) {
-                        fault_detection.push((i+1) * a)
+                        fault_detection.push((i+1) * a * 2)
                         pass = false
                     }
                 }
